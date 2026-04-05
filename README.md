@@ -12,7 +12,7 @@ conda activate [환경이름]
 
 ### 1. **핵심 환경 설정 (Settings)**
 
-코드 상단의 Settings 섹션에서 실험의 기본 조건을 설정합니다.
+mem_main.py 코드 상단의 Settings 섹션에서 실험의 기본 조건을 설정합니다.
 
 - story_id: 실험의 고유 식별자입니다.
 
