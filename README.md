@@ -1,6 +1,6 @@
 # mem_story
 
-### 💡 시작하기
+## 💡 시작하기
 
 ```bash
 conda env create -f environment.yml
@@ -8,9 +8,9 @@ conda activate [환경이름]
 ```
 
 
-### ⚙️ Configuration
+## ⚙️ Configuration
 
-1. **핵심 환경 설정 (Settings)**
+### 1. **핵심 환경 설정 (Settings)**
 
 코드 상단의 Settings 섹션에서 실험의 기본 조건을 설정합니다.
 
@@ -30,13 +30,13 @@ conda activate [환경이름]
 
   - False: 초기 시나리오 흐름대로 진행합니다.
 
-2. **LLM 모델 설정**
+### 2. **LLM 모델 설정**
 
 - model: gemini-2.0-flash
 
 - .env 파일: 프로젝트 루트 디렉토리에 .env 파일을 생성하고 GOOGLE_API_KEY=your_key_here를 반드시 입력해야 합니다.
 
-3. **데이터 로드 및 저장 (I/O Paths)**
+### 3. **데이터 로드 및 저장 (I/O Paths)**
 
 모든 결과물은 output/ 폴더 내에 JSON 형태로 저장됩니다.
 
@@ -50,7 +50,7 @@ conda activate [환경이름]
 
 
 
-### 🚀 실행 순서
+## 🚀 실행 순서
 
 1. domain과 story_id를 설정합니다.
 
