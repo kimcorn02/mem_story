@@ -55,22 +55,30 @@ class StoryGenerator:
             print("JSON parsing err")
             return []   
 
-    def generate_persona(self, domain: str):
-        response = self.client.models.generate_content(
-            model=self.model, 
-            contents=PERSONA_PROMPT.format(domain=domain)
-        )
-        print('re',response.text)
-
-        persona_list = self.json_parser(response.text)
-        print('li', persona_list)
-
-        return persona_list
+    def generate_persona(self, persona_path: str, domain: str, max_retries: int = 3):
+        from mem_module import save_dict_json
+        
+        for attempt in range(max_retries):
+            try:
+                response = self.client.models.generate_content(
+                    model=self.model, 
+                    contents=PERSONA_PROMPT.format(domain=domain)
+                )
+                persona_dict = self.json_parser(response.text)[0]
+                save_dict_json(persona_path, self.story_id, persona_dict)
+                return persona_dict
+            
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt == max_retries - 1:
+                    print(f"Final failure for story_id: {self.story_id}")
+                    return None
+        
     
     def generate_persona_class(self, persona_dict):
         personas = []
         for name, traits in persona_dict.items():
-            print('n',name,'t',traits)
+            # print('n',name,'t',traits)
             new_persona = Persona(
                 story_id=self.story_id,
                 persona_id=f"{self.story_id}_{uuid.uuid4().hex[:6]}",
@@ -96,7 +104,7 @@ class StoryGenerator:
         for ep_dict in episode_list:
             new_episode = Episode(
                 story_id=self.story_id,
-                date=int(ep_dict.get('date', '')),
+                date=int(ep_dict.get('date', 0)),
                 scenario=ep_dict.get('scenario', ''),
                 agents=ep_dict.get('agents', []),
                 scenario_objectives=ep_dict.get('scenario_objectives', []),
@@ -187,7 +195,7 @@ class QAGenerator:
         set_af = episode_af.agents
         
         for agent in agent_list:
-            print('name',agent.name)
+            # print('name',agent.name)
             name = agent.name
             
             # A. 둘 다 참여 안 한 경우 (bf에도 없고 af에도 없음)
@@ -201,7 +209,7 @@ class QAGenerator:
                 )
 
                 tmp_qa = self.json_parser(response.text)
-                print('tmp', tmp_qa)
+                # print('tmp', tmp_qa)
                 tmp_qa[0]["type"] = "none"
                 tmp_qa[0]["evidence"] = episode_af.memory_evidences
 
@@ -219,7 +227,7 @@ class QAGenerator:
                 )
 
                 tmp_qa = self.json_parser(response.text)
-                print('tmp', tmp_qa)
+                # print('tmp', tmp_qa)
                 tmp_qa[0]["type"] = "bf"
                 tmp_qa[0]["evidence"] = episode_af.memory_evidences
 
@@ -235,7 +243,7 @@ class QAGenerator:
                 )
 
                 tmp_qa = self.json_parser(response.text)
-                print('tmp', tmp_qa)
+                # print('tmp', tmp_qa)
                 tmp_qa[0]["type"] = "both"
                 tmp_qa[0]["evidence"] = episode_af.memory_evidences
 
@@ -246,7 +254,8 @@ class QAGenerator:
             elif name not in set_bf and name in set_af:
                 pass
         
-        print(qa_list)
+        # print(qa_list)
+        return qa_list
 
         
 

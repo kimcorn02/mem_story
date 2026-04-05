@@ -1,3 +1,4 @@
+import os
 import json
 import datetime
 import uuid
@@ -7,12 +8,23 @@ from mem_models import Episode
 from typing import List, Dict, Optional
 
 def load_json(path):
-    with open(path, 'r') as f:
-        data = json.load(f)
-        print(f"Opened {path}")
-    return data
+    if not os.path.exists(path):
+        return {}
+    
+    if os.path.getsize(path) == 0:
+        return {}
+    
+    try:
+        with open(path, 'r') as f:
+            data = json.load(f)
+            print(f"Opened {path}")
+            return data
 
-def save_dict_json(path, story_id, new_data):
+    except json.JSONDecodeError:
+        return {}
+    
+def save_dict_json(path, story_id, new_data):  
+    # print('new', new_data)  
     data = load_json(path)
     data[story_id] = new_data
 
@@ -41,8 +53,6 @@ def save_episodes(path, story_id, episodes):
 
     # 3. 해당 story_id 데이터 업데이트
     all_data[story_id] = serializable_episodes
-
-    # 4. 파일 쓰기 (한글 깨짐 방지 및 들여쓰기 적용)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(all_data, f, indent=4, ensure_ascii=False)
     
@@ -60,7 +70,6 @@ def load_episodes_as_class(path, story_id):
         raw_episodes = all_data.get(story_id, [])
         
         # 2. 딕셔너리를 Episode 객체로 변환
-        # **ep는 딕셔너리의 키-값을 클래스의 인자로 풀어헤쳐 전달합니다.
         episode_objects = [Episode(**ep) for ep in raw_episodes]
         
         print(f"📂 {story_id} 에피소드 로드 완료! (객체 {len(episode_objects)}개)")
