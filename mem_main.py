@@ -12,8 +12,8 @@ client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 model = 'gemini-2.0-flash'
 
 # Settings
-# story_id = generate_story_id("sports_car")
-story_id = "sports_car_260405_1938_b394"
+story_id = generate_story_id("sports_car")
+# story_id = "sports_car_260405_1938_b394"
 domain="스포츠카 드라이빙 모임"
 max_time_passed = 10
 add_twist = False
@@ -65,14 +65,14 @@ if add_twist == True:
     # agent memory after twist
     agent_mem_list = [{persona.name: persona.memory}for persona in persona_class_list]
     save_agent_memory(agent_memory_path, story_id=story_id+f"_twisted_{twisted_date}", agent_mem_list=agent_mem_list)
+
+    # QA generation
+    # twisted_story_id = "sports_car_260405_1938_b394_twisted_7"
+    twisted_story_id = story_id+f"_twisted_{twisted_date}"
+    twisted_episode_class_list = load_episodes_as_class(episode_path, twisted_story_id)
+
+    qa_list = QA_generator.generate_qa(persona_class_list, twisted_episode_class_list)
+    save_dict_json(qa_path, story_id, qa_list)
+    
 else:
     pass
-
-
-# QA generation
-twisted_story_id = "sports_car_260405_1938_b394_twisted_7"
-# twisted_story_id = story_id+f"_twisted_{twisted_date}"
-twisted_episode_class_list = load_episodes_as_class(episode_path, twisted_story_id)
-
-qa_list = QA_generator.generate_qa(persona_class_list, twisted_episode_class_list)
-save_dict_json(qa_path, story_id, qa_list)
